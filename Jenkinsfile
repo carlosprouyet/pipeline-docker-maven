@@ -12,7 +12,6 @@ pipeline {
             steps {
                 sh '''
 			./jenkins/build/mvn.sh mvn -B -DskipTests clean package
-			./jenkins/build/build.sh
            
                     '''   
             }
@@ -32,9 +31,11 @@ pipeline {
                     junit 'java-app/target/surefire-reports/*.xml'
                 }
 	    }
+
+        }
         stage('Deploy') {
             steps {
-       		sh './jenkins/deploy/deploy.sh'
+       		sh './jenkins/build/build.sh'
             }
         }
     }
