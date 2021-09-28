@@ -2,11 +2,11 @@
 
 # Copia el jar
 
-cp -f java-app/target/*.jar jenkins/deploy/share/modules/jars
+cp -f java-app/target/*.jar jenkins/deploy/
 
 echo "######################"
 echo "*** Building image ***"
 echo "######################"
 
-docker-compose up --build
+cd jenkins/deploy && docker-compose up --build
 
