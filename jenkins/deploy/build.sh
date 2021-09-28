@@ -8,5 +8,5 @@ echo "######################"
 echo "*** Building image ***"
 echo "######################"
 
-cd jenkins/build/ && docker-compose up --build
+docker-compose up --build
 
