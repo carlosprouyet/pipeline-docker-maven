@@ -9,5 +9,5 @@ echo "######################"
 echo "*** Building image ***"
 echo "######################"
 
-cd jenkins/deploy && docker-compose up --build
+cd jenkins/deploy && docker-compose up --build -d
 
