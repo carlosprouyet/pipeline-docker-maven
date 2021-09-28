@@ -1,0 +1,43 @@
+<alfresco-config>
+   <config evaluator="string-compare" condition="Users" replace="true">
+      <users>
+         <!-- minimum length for username and password -->
+         <username-min-length>2</username-min-length>
+         <password-min-length>3</password-min-length>
+         <show-authorization-status>false</show-authorization-status>
+      </users>
+      <!-- This enables/disables the Add External Users Panel on the Add Users page. -->
+      <enable-external-users-panel>false</enable-external-users-panel>
+   </config>
+   <!--   <config evaluator="string-compare" condition="CSRFPolicy" replace="true">
+	<filter/>
+   </config>-->
+
+   <config evaluator="string-compare" condition="RepositoryLibrary" replace="true">
+      <!--
+         Root nodeRef or xpath expression for top-level folder.
+         e.g. alfresco://user/home, /app:company_home/st:sites/cm:site1
+         If using an xpath expression, ensure it is properly ISO9075 encoded here.
+      -->
+      <root-node>alfresco://company/home</root-node>
+
+      <tree>
+         <!--
+            Whether the folder Tree component should enumerate child folders or not.
+            This is a relatively expensive operation, so should be set to "false" for Repositories with broad folder structures.
+         -->
+         <evaluate-child-folders>false</evaluate-child-folders>
+
+         <!--
+            Optionally limit the number of folders shown in treeview throughout Share.
+         -->
+         <maximum-folder-count>500</maximum-folder-count>
+      </tree>
+
+      <!--
+         Whether the link to the Repository Library appears in the header component or not.
+      -->
+      <visible>false</visible>
+   </config>
+
+</alfresco-config>   

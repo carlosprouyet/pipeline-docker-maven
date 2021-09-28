@@ -1,0 +1,184 @@
+version: "2"
+
+services:
+    alfresco:
+        build:
+          context: ./alfresco
+        mem_limit: 3000m
+        environment:
+            JAVA_OPTS: '
+                -Ddb.driver=org.postgresql.Driver
+                -Ddb.username=alfresco
+                -Ddb.password=alfresco
+                -Ddb.driver=com.mysql.cj.jdbc.Driver
+                -Ddb.url=jdbc:mysql://mariadb/alfresco?useUnicode=yes\&characterEncoding=UTF-8
+                -Dsolr.host=solr6
+                -Dsolr.port=8983
+                -Dsolr.secureComms=none
+                -Dsolr.base.url=/solr
+                -Dindex.subsystem.name=solr6
+                -Dshare.host=paredes-alfresco.ovh
+                -Dshare.port=443
+                -Dalfresco.host=localhost
+                -Dalfresco.port=8080
+                -Daos.baseUrlOverwrite=https://paredes-alfresco.ovh:443/alfresco/aos
+                -Dmessaging.broker.url="failover:(nio://activemq:61616)?timeout=3000&jms.useCompression=true"
+                -Ddeployment.method=DOCKER_COMPOSE
+                -Dlocal.transform.service.enabled=true
+                -DlocalTransform.pdfrenderer.url=http://alfresco-pdf-renderer:8090/
+                -DlocalTransform.imagemagick.url=http://imagemagick:8090/
+                -DlocalTransform.libreoffice.url=http://libreoffice:8090/
+                -DlocalTransform.tika.url=http://tika:8090/
+                -DlocalTransform.misc.url=http://transform-misc:8090/
+                -Dlegacy.transform.service.enabled=true
+                -Dalfresco-pdf-renderer.url=http://alfresco-pdf-renderer:8090/
+                -Djodconverter.url=http://libreoffice:8090/
+                -Dimg.url=http://imagemagick:8090/
+                -Dtika.url=http://tika:8090/
+                -Dtransform.misc.url=http://transform-misc:8090/
+                -Dcsrf.filter.enabled=false
+                -Xms1500m -Xmx3000m
+                -Dmail.host=smtp
+                -Dmail.port=25
+                -Dmail.username=anonymous
+                -Dmail.password=
+                -Dmail.protocol=smtp
+                -Dmail.smtps.starttls.enable=false
+                -Dmail.smtps.auth=false
+                -Dantivirus.exe=/usr/bin/clamdscan
+                -Dantivirus.mailer=carlosparedesrouyet@gmail.com
+                '
+        volumes:
+            - ./data/alf-repo-data:/usr/local/tomcat/alf_data
+            - ./logs/alfresco:/usr/local/tomcat/logs
+        ports:
+            - 8082:8080
+
+    alfresco-pdf-renderer:
+        image: alfresco/alfresco-pdf-renderer:2.1.0
+        mem_limit: 1000m
+        environment:
+            JAVA_OPTS: " -Xms256m -Xmx1000m"
+            #ports:
+            #- 8090:8090
+
+    imagemagick:
+        image: alfresco/alfresco-imagemagick:2.1.0
+        mem_limit: 1000m
+        environment:
+            JAVA_OPTS: " -Xms256m -Xmx1000m"
+            #ports:
+                #- 8091:8090
+
+    libreoffice:
+        image: alfresco/alfresco-libreoffice:2.1.0
+        mem_limit: 1000m
+        environment:
+            JAVA_OPTS: " -Xms256m -Xmx1000m"
+            #ports:
+                #- 8092:8090
+
+    tika:
+        image: alfresco/alfresco-tika:2.1.0
+        mem_limit: 1000m
+        environment:
+            JAVA_OPTS: " -Xms256m -Xmx1000m"
+            #ports:
+                #- 8093:8090
+
+    transform-misc:
+        image: alfresco/alfresco-transform-misc:2.1.0
+        mem_limit: 1000m
+        environment:
+            JAVA_OPTS: " -Xms256m -Xmx1000m"
+            #ports:
+                #- 8094:8090
+
+    share:
+        build:
+          context: ./share
+        mem_limit: 2500m
+        environment:
+            REPO_HOST: "alfresco"
+            REPO_PORT: "8080"
+            JAVA_OPTS: "
+                -Xms2000m
+                -Xmx2500m
+                -Dalfresco.host=localhost
+                -Dalfresco.port=8080
+                -Dalfresco.context=alfresco
+                -Dalfresco.protocol=http
+                "
+        volumes:
+            - ./logs/share:/usr/local/tomcat/logs
+              #            - ./share/context.xml:/usr/local/tomcat/conf/context.xml
+        ports:
+            - 8081:8080 
+
+    mariadb:
+        image: mariadb:latest
+        mem_limit: 1000m
+        environment:
+            - MYSQL_ROOT_PASSWORD=alfresco
+            - MYSQL_DATABASE=alfresco
+            - MYSQL_USER=alfresco
+            - MYSQL_PASSWORD=alfresco
+        command: "mysqld
+            --character-set-server=utf8
+            --collation-server=utf8_bin
+            --lower_case_table_names=1
+            --max_connections=200
+            --innodb-flush-method=O_DIRECT
+            --wait_timeout=28800"
+        volumes:
+            - ./data/mariadb_data:/var/lib/mysql
+            - ./logs/mariadb:/var/log/mysql
+              #ports:
+                #- 3306:3306
+            
+
+    solr6:
+        image: alfresco/alfresco-search-services:1.4.1    
+        mem_limit: 2000m
+        environment:
+            - SOLR_ALFRESCO_HOST=alfresco
+            - SOLR_ALFRESCO_PORT=8080
+            - SOLR_SOLR_HOST=solr6
+            - SOLR_SOLR_PORT=8983
+            - SOLR_CREATE_ALFRESCO_DEFAULTS=alfresco,archive
+            - ALFRESCO_SECURE_COMMS=none
+            - "SOLR_JAVA_MEM=-Xms2g -Xmx2g"
+              #ports:
+                #- 8083:8983 #Browser port
+        volumes:
+            - ./data/solr-data:/opt/alfresco-search-services/data
+
+    activemq:
+        image: alfresco/alfresco-activemq:5.15.8
+        mem_limit: 1g
+        #ports:
+                #- 8161:8161 # Web Console
+              #- 5672:5672 # AMQP
+              #- 61616:61616 # OpenWire
+              #- 61613:61613 # STOMP
+            
+    proxy:
+        image: alfresco/acs-community-ngnix:1.0.0
+        mem_limit: 250m
+        depends_on:
+            - alfresco
+        ports:
+            - 8080:8080
+        links:
+            - alfresco
+            - share
+        volumes:
+            - ./nginx-config/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx-config/nginx.htpasswd:/etc/nginx/conf.d/nginx.htpasswd
+              #            - ./nginx-config/cert/localhost.cer:/etc/nginx/localhost.cer
+              #            - ./nginx-config/cert/localhost.key:/etc/nginx/localhost.key
+    smtp:
+        image: mwader/postfix-relay
+        mem_limit: 128m
+
+
