@@ -113,7 +113,7 @@ services:
             - ./logs/share:/usr/local/tomcat/logs
               #            - ./share/context.xml:/usr/local/tomcat/conf/context.xml
         ports:
-            - 8081:8080 
+            - 8083:8080 
 
     mariadb:
         image: mariadb:latest
