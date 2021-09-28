@@ -4,7 +4,7 @@ echo "########################"
 echo "*** Preparing to push ***"
 echo "########################"
 
-REGISTRY="linuxfacilito.online:5043"
+REGISTRY="192.168.117.128:5043"
 IMAGE="app"
 
 echo "*** Logging in ***"

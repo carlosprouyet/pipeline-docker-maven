@@ -7,6 +7,6 @@ echo $PASS >> /tmp/.auth
 
 
 # Transifere el archivo
-scp   -i /opt/aws_linuxfacilito.pem /tmp/.auth  centos@linuxfacilito.online:/tmp/.auth
-scp -i /opt/aws_linuxfacilito.pem ./jenkins/deploy/publish centos@linuxfacilito.online:/tmp/publish
-ssh -i /opt/aws_linuxfacilito.pem  centos@linuxfacilito.online /tmp/publish
+scp   -i /tmp/.auth  cparedes@192.168.117.128:/tmp/.auth
+scp -i ./jenkins/deploy/publish cparedes@192.168.117.128:/tmp/publish
+ssh -i  cparedes@192.168.117.128 /tmp/publish
