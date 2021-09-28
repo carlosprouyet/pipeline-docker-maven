@@ -48,9 +48,6 @@ services:
                 -Dantivirus.exe=/usr/bin/clamdscan
                 -Dantivirus.mailer=carlosparedesrouyet@gmail.com
                 '
-        volumes:
-            - ./data/alf-repo-data:/usr/local/tomcat/alf_data
-            - ./logs/alfresco:/usr/local/tomcat/logs
         ports:
             - 8082:8080
 
@@ -109,9 +106,6 @@ services:
                 -Dalfresco.context=alfresco
                 -Dalfresco.protocol=http
                 "
-        volumes:
-            - ./logs/share:/usr/local/tomcat/logs
-              #            - ./share/context.xml:/usr/local/tomcat/conf/context.xml
         ports:
             - 8083:8080 
 
@@ -150,8 +144,6 @@ services:
             - "SOLR_JAVA_MEM=-Xms2g -Xmx2g"
               #ports:
                 #- 8083:8983 #Browser port
-        volumes:
-            - ./data/solr-data:/opt/alfresco-search-services/data
 
     activemq:
         image: alfresco/alfresco-activemq:5.15.8
@@ -162,21 +154,6 @@ services:
               #- 61616:61616 # OpenWire
               #- 61613:61613 # STOMP
             
-    proxy:
-        image: alfresco/acs-community-ngnix:1.0.0
-        mem_limit: 250m
-        depends_on:
-            - alfresco
-        ports:
-            - 8080:8080
-        links:
-            - alfresco
-            - share
-        volumes:
-            - ./nginx-config/nginx.conf:/etc/nginx/nginx.conf
-            - ./nginx-config/nginx.htpasswd:/etc/nginx/conf.d/nginx.htpasswd
-              #            - ./nginx-config/cert/localhost.cer:/etc/nginx/localhost.cer
-              #            - ./nginx-config/cert/localhost.key:/etc/nginx/localhost.key
     smtp:
         image: mwader/postfix-relay
         mem_limit: 128m
