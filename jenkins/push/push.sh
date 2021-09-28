@@ -4,7 +4,7 @@ echo "########################"
 echo "*** Preparing to push ***"
 echo "########################"
 
-REGISTRY="192.168.117.128:5043"
+REGISTRY="192.168.117.128:5000"
 IMAGE="app"
 
 echo "*** Logging in ***"
